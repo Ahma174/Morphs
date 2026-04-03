@@ -105,19 +105,6 @@ function oof()
             toolTrack = Humanoid:LoadAnimation(animTable["toolnone"])
             toolTrack.Priority = Enum.AnimationPriority.Action
             toolTrack:Play(0.1)
-
-            local handle = tool:WaitForChild("Handle", 1)
-            if handle then
-                local rightArm = Figure:FindFirstChild("Right Arm")
-                if rightArm then
-                    local grip = rightArm:FindFirstChild("RightGrip") or Instance.new("Weld")
-                    grip.Name = "RightGrip"
-                    grip.Part0 = rightArm
-                    grip.Part1 = handle
-                    grip.C0 = CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0) * tool.Grip
-                    grip.Parent = rightArm
-                end
-            end
         end
     end)
 
