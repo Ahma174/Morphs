@@ -3,15 +3,14 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
+local GUIModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ahma174/Morphs/refs/heads/main/A60%20GUI%20Module.lua"))()
+
 local function createA60Morph()
     local realCharacter = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
     local realHRP = realCharacter:WaitForChild("HumanoidRootPart")
-    local realHumanoid = realCharacter:WaitForChild("Humanoid")
-    
-    local spawnPos = realHRP.Position
 
     local success, assetModel = pcall(function()
-        return game:GetObjects("rbxassetid://12778057668")[1]
+        return game:GetObjects("rbxassetid://12457764963")[1]
     end)
     
     if not success or not assetModel then
@@ -32,7 +31,7 @@ local function createA60Morph()
     end
 
     for _, obj in ipairs(assetModel:GetDescendants()) do
-        if obj:IsA("Script") or obj:IsA("LocalScript") then
+        if obj:IsA("LuaSourceContainer") or obj:IsA("BodyMover") or obj:IsA("Constraint") then
             obj:Destroy()
         end
     end
@@ -108,9 +107,12 @@ local function createA60Morph()
 
     finalHumanoid.HipHeight = 1.8 
     finalHumanoid.UseJumpPower = true
-    finalHumanoid.JumpPower = 50
+    finalHumanoid.JumpPower = 75
     finalHumanoid.WalkSpeed = 65
     finalHumanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+
+    finalHumanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+    finalHumanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
 
     local animator = finalHumanoid:FindFirstChildOfClass("Animator")
     if not animator then
@@ -140,39 +142,62 @@ local function createA60Morph()
         end
     end
 
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://9114223126"
-    sound.Volume = 2
-    sound.Looped = true
-    sound.Parent = finalRootPart
-    sound:Play()
-
-    local connection
-    connection = RunService.Stepped:Connect(function()
+    local speedConnection
+    speedConnection = RunService.Stepped:Connect(function()
         if morphClone and morphClone.Parent and finalRootPart then
             finalHumanoid.WalkSpeed = 65
+            finalHumanoid.PlatformStand = false
+            finalHumanoid.Sit = false
         else
-            connection:Disconnect()
+            speedConnection:Disconnect()
         end
     end)
 
+    local morphMain = morphClone:FindFirstChild("Main", true) or finalRootPart
+    local footsteps = morphMain:FindFirstChild("Footsteps")
+    local playSound = morphMain:FindFirstChild("PlaySound")
+
+    local function playAmbience()
+        if footsteps and footsteps:IsA("Sound") then
+            footsteps.Looped = true
+            footsteps:Play()
+        end
+        if playSound and playSound:IsA("Sound") then
+            playSound.Looped = true
+            playSound:Play()
+        end
+    end
+
+    local function stopAmbience()
+        if footsteps and footsteps:IsA("Sound") then footsteps:Stop() end
+        if playSound and playSound:IsA("Sound") then playSound:Stop() end
+    end
+
+    local getVisibilityState = GUIModule.CreateUI(morphClone, playAmbience, stopAmbience)
+    playAmbience()
+
     task.spawn(function()
-        while morphClone.Parent do
-            local decals = {}
-            for _, descendant in ipairs(morphClone:GetDescendants()) do
-                if descendant:IsA("Decal") or descendant:IsA("Texture") then
-                    table.insert(decals, descendant)
+        while morphClone and morphClone.Parent do
+            if getVisibilityState() then
+                local images = {}
+                for _, desc in ipairs(morphClone:GetDescendants()) do
+                    if desc:IsA("ImageLabel") or desc:IsA("Decal") or desc:IsA("Texture") then
+                        table.insert(images, desc)
+                    end
                 end
+
+                for _, img in ipairs(images) do if getVisibilityState() then img.ImageTransparency = 0.2 end end
+                task.wait(0.05)
+                for _, img in ipairs(images) do if getVisibilityState() then img.ImageTransparency = 0.5 end end
+                task.wait(0.05)
+                for _, img in ipairs(images) do if getVisibilityState() then img.ImageTransparency = 0 end end
+                task.wait(0.05)
+            else
+                task.wait(0.1)
             end
-            
-            for _, d in ipairs(decals) do d.Transparency = 0.2 end
-            task.wait(0.05)
-            for _, d in ipairs(decals) do d.Transparency = 0.5 end
-            task.wait(0.05)
-            for _, d in ipairs(decals) do d.Transparency = 0 end
-            task.wait(0.05)
         end
     end)
 end
+
 
 createA60Morph()
