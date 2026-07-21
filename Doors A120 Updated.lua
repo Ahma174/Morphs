@@ -108,7 +108,7 @@ local function createA120Morph()
     finalHumanoid.HipHeight = 1.8 
     finalHumanoid.UseJumpPower = true
     finalHumanoid.JumpPower = 75
-    finalHumanoid.WalkSpeed = 65
+    finalHumanoid.WalkSpeed = 55
     finalHumanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 
     finalHumanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
