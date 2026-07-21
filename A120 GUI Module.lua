@@ -42,7 +42,7 @@ function Module.CreateUI(morphClone, playAmbienceFunc, stopAmbienceFunc)
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 36)
     title.BackgroundTransparency = 1
-    title.Text = "A-60"
+    title.Text = "A-120"
     title.TextColor3 = CREAM_COLOR
     title.TextSize = 22
     title.Font = Enum.Font.Oswald
