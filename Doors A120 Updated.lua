@@ -145,7 +145,7 @@ local function createA120Morph()
     local speedConnection
     speedConnection = RunService.Stepped:Connect(function()
         if morphClone and morphClone.Parent and finalRootPart then
-            finalHumanoid.WalkSpeed = 65
+            finalHumanoid.WalkSpeed = 55
             finalHumanoid.PlatformStand = false
             finalHumanoid.Sit = false
         else
